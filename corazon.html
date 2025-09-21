@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corazón con imagen y mensajes</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background-image: url("fondocielo.jpg");  /* tu imagen de fondo */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      touch-action: manipulation;
+    }
+
+    .heart-wrap {
+      width: 90vmin;
+      height: 90vmin;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+
+    svg.heart-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .pulse {
+      transform-origin: center;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .message {
+      position: absolute;
+      font-size: 3.2vmin;
+      background: rgba(255,255,255,0.95);
+      padding: 0.4em 0.85em;
+      border-radius: 1em;
+      animation: floatUp 2.5s ease-out forwards;
+      white-space: nowrap;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0) translateX(0); }
+      to { opacity: 0; transform: translateY(-40vmin) translateX(0); }
+    }
+
+    .hint-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -5vmin;
+      gap: 1rem;
+    }
+    .hint-img {
+      width: 60vmin;
+      max-width: 400px;
+    }
+    .emoji-heart {
+      font-size: 3rem;
+      animation: bounce 1.2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="heart-wrap" id="heartWrap" aria-label="Corazón interactivo">
+    <svg class="heart-svg pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+      <defs>
+        <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+          <path d="M0.5 0.18 C0.35 -0.02 0 0.2 0.5 0.7 C1 0.2 0.65 -0.02 0.5 0.18 Z" />
+        </clipPath>
+        <!-- Degradado para el borde -->
+        <linearGradient id="heartBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#87CEEB"/> <!-- celeste cielo -->
+          <stop offset="100%" stop-color="#FFD700"/> <!-- dorado -->
+        </linearGradient>
+      </defs>
+
+      <!-- Imagen dentro del corazón -->
+      <image href="mamalidita.png"
+             x="0" y="0" 
+             width="100%" height="100%"
+             preserveAspectRatio="xMidYMid meet"
+             clip-path="url(#heartClip)">
+      </image>
+
+      <!-- Borde con degradado -->
+      <g transform="translate(0,0) scale(100)">
+        <path d="M0.5 0.18 C0.35 -0.02 0 0.2 0.5 0.7 C1 0.2 0.65 -0.02 0.5 0.18 Z" 
+              fill="none" 
+              stroke="url(#heartBorder)" 
+              stroke-width="0.025"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Imagen del texto con emoji al lado -->
+  <div class="hint-container">
+    <img src="letras.png" alt="Toca el corazón" class="hint-img" />
+    <span class="emoji-heart">❤️</span>
+  </div>
+
+  <script>
+    const messages = [
+      "Hija, eres mi orgullo 🌸",
+      "Nunca olvides lo fuerte que eres 💪",
+      "Estoy siempre contigo 💖",
+      "Tu sonrisa ilumina mi vida 😊",
+      "Sigue adelante, mi niña ✨",
+      "Eres bendición y esperanza 🙏",
+      "Siempre confío en ti 💕",
+      "Te amo con todo mi corazón ❤️"
+    ];
+
+    const wrap = document.getElementById('heartWrap');
+
+    function spawnMessage(text) {
+      const msg = document.createElement('div');
+      msg.className = 'message';
+      msg.innerText = text;
+
+      const rect = wrap.getBoundingClientRect();
+      const x = rect.left + rect.width * (0.5 + (Math.random() - 0.5) * 0.25);
+      const y = rect.top + rect.height * (0.45 + (Math.random() - 0.5) * 0.2);
+      msg.style.left = `${x}px`;
+      msg.style.top = `${y}px`;
+
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 2500);
+    }
+
+    wrap.addEventListener('click', () => spawnMessage(messages[Math.floor(Math.random() * messages.length)]));
+    wrap.addEventListener('touchstart', (e) => { 
+      e.preventDefault(); 
+      spawnMessage(messages[Math.floor(Math.random() * messages.length)]); 
+    });
+  </script>
+</body>
+</html>
